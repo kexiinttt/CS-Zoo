@@ -121,7 +121,7 @@ Stream用于实现消息队列. Redis本身能够实现pub/sub, 但是因为不�
 3. 支持消费组
 4. 支持ack机制, 未收到ack的时候消息保存在***PEL(Pending Entries List)***以供消费者consume失败后retry
 
-![Stream](./pic/2_DataType_Stream.png)
+![Stream](../pic/2_DataType_Stream.png)
 
 多个consumer group可以使用同一个message, 但是同一个message最多只会被group中某一个consumer使用, 即某个消费组中任意一个消费者读取了消息都会使消费组的游标往前移动.
 

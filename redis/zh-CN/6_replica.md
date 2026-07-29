@@ -4,7 +4,7 @@
 * 主机 &rarr; 支持客户端读写操作, 并不断的向从机发送写同步
 * 从机 &rarr; 只支持客户端读操作, 并不断接受主机的写同步
 
-![Master Slave](./pic/6_master_slave.png)
+![Master Slave](../pic/6_master_slave.png)
 
 其中写同步是用于将主机中新写入的内容同步到从机, 从而保证客户端能够读取到新鲜的数据.
 
@@ -13,7 +13,7 @@
 
 ## 过程
 
-![Replica Process](./pic/6_master_slave_replica_process.png)
+![Replica Process](../pic/6_master_slave_replica_process.png)
 
 整体流程图如上.
 　
@@ -63,13 +63,13 @@ replicaof <主机IP> <主机port>
 replicaof <从机2的IP> 6379
 ```
 
-![Master Slave Proxy](./pic/6_master_slave_proxy.png)
+![Master Slave Proxy](../pic/6_master_slave_proxy.png)
 
 # 增量复制
 
 如果主从之间TCP链接断开之后重连, 此时主机可能已经有了许多新的写操作, 如何将最新的数据复制到从机呢? 如果使用全量复制, 那么每次都要生成RDB并传输并重新加载, 每一步都有较大开销. 所以Redis选择增量复制.
 
-![Incremental Replica](./pic/6_incremental_replica.png)
+![Incremental Replica](../pic/6_incremental_replica.png)
 > 左侧`Slave1`因为断开时间太久, 丢失数据太多所以使用**全量复制(FULLRESYNC)**; 右侧`Slave2`断开时间比较短, 可以使用**增量复制(CONTINUE)**.
 
 首先介绍一下两个概念:
@@ -84,7 +84,7 @@ replicaof <从机2的IP> 6379
    * 如果`offset < size`, 即主机的新增数据还未覆盖上一次读的数据, 则把`[slave_repl_offset % size, master_repl_offset % size]`中的数据放到**replication buffer**并增量复制
    * 如果`offset >= size`, 即主机的新增数据已经覆盖了之前的内容, 那么直接全量复制即可
 
-![Ring Buffer](./pic/6_ring_buffer.png)
+![Ring Buffer](../pic/6_ring_buffer.png)
 
 ## 设置buffer大小
 

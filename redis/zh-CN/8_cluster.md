@@ -6,7 +6,7 @@
 
 使用主从模式无法避免性能问题, 因为主机从机保存了所有的内容. Cluster模式提供了分片(sharding)方案, 每个机子只需要保存一部分数据即可.
 
-![Overview](./pic/8_cluster_overview.png)
+![Overview](../pic/8_cluster_overview.png)
 
 # Hash Slot 哈希槽
 
@@ -63,12 +63,12 @@ Cluster最大的特色就是scale-out, 所以允许动态的增加或减少服�
 
 **MOVED重定向**
 
-![Moved](./pic/8_moved.png)
+![Moved](../pic/8_moved.png)
 
 如果key正好在访问的服务器所管理的slot中, 则直接返回. 否则进行如上图所示的MOVED重定向.
 
 **ASK重定向**
 
-![ASK](./pic/8_ask.png)
+![ASK](../pic/8_ask.png)
 
 如果key正好在访问的服务器所管理的slot中, 则直接返回. 如果key在一个没有迁移的slot中, 则进行MOVED重定向. 如果key所在slot在迁移中, 则进行如上图所示的ASK重定向.

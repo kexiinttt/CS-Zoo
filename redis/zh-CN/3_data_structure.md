@@ -1,6 +1,6 @@
 # 映射关系
 
-![映射关系](./pic/3_DataType_DataStructure_Mapping.png)
+![映射关系](../pic/3_DataType_DataStructure_Mapping.png)
 
 较新版本中ZipList被ListPack淘汰, LinkedList被QuickList淘汰.
 
@@ -17,13 +17,13 @@
 字符串可以保存三种类型: int, embstr和raw.
 
 如果是int, 那么会直接把该值放到redisObject的`ptr`属性中.
-![encoding=int](./pic/3_SDS_Encoding_Int.png)
+![encoding=int](../pic/3_SDS_Encoding_Int.png)
 
 如果是较短的字符串, 那么redisObject和SDS将会通过一次内存分配函数来分配一块连续的内存空间.
-![encoding=embstr](./pic/3_SDS_Encoding_Embstr.png)
+![encoding=embstr](../pic/3_SDS_Encoding_Embstr.png)
 
 如果是较长的字符串, 那么redisObject和SDS将会通过两次内存分配.
-![encoding=raw](./pic/3_SDS_Encoding_Raw.png)
+![encoding=raw](../pic/3_SDS_Encoding_Raw.png)
 
 其优缺点如下:
 1. embstr可以减少分配和回收的次数, 同时因为是连续内存空间所以效率更高.
@@ -66,7 +66,7 @@ typedef struct List {
 
 本质上相当于用时间换空间, 所以只适合元素数量不多或者数据本身简单的情况.
 
-![ziplist](./pic/3_ziplist.png)
+![ziplist](../pic/3_ziplist.png)
 * `zlbytes` &rarr; 整个列表的内存字节数
 * `zltail` &rarr; 列表尾的偏移量
 * `zllen` &rarr; 节点个数
@@ -99,13 +99,13 @@ QuickList本质上是一个双向链表 + ZipList.
 
 由于ZipList的问题在于数据量大的时候容易出现连锁更新, 所以QuickList通过控制每个ZipList的大小来尽可能规避连锁更新带来的损失. 即当插入新元素的时候, 如果当前ZipList已经有足够多数据, 则新建一个新的ZipList作为链表节点, 然后插入元素.
 
-![quicklist](./pic/3_quicklist.png)
+![quicklist](../pic/3_quicklist.png)
 
 ---
 
 # Listpack
 
-![listpack](./pic/3_listpack.png)
+![listpack](../pic/3_listpack.png)
 
 ZipList最大的问题就是因为保存了前一个节点的大小, 所以导致会有连锁更新问题. 而Listpack中的`len`属性只记录当前节点的大小, 所以更新的时候不再会有连锁的问题.
 
@@ -193,7 +193,7 @@ typedef struct zskiplistNode {
 ```
 其中最特殊的是`zskiplistNode`中的`level[]`数组, 其每个元素代表每个层级, 如`level[0]`代表第一层, `level[1]`代表第二层.
 
-![skiplist](./pic/3_skiplist.png)
+![skiplist](../pic/3_skiplist.png)
 
 ## 跳表查询过程
 跳表会从最高层开始, 因为最高层的跨度最大, 能快速定位. 如果`下一个节点权重<目标权重`, 则forward到下一个节点并继续比较. 如果`下一个节点权重>目标权重`, 则降级到下一个层级并继续比较.
@@ -237,7 +237,7 @@ contents数组存储内容取决于encoding, 比如`encoding=INT_16`那么就存
 ## 升级
 当新插入元素比当前集合类型更高(比如插入INT_16到INT_8数组), 数组会自动升级. 该过程并不会新建一个新类型数组, 而是在已有基础上扩容, 从而节省空间.
 
-![intset](./pic/3_intset.jpg)
+![intset](../pic/3_intset.jpg)
 
 > [!IMPORTANT]
 > 整数集合只能升级不能降级.

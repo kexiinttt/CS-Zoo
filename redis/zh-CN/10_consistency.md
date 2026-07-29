@@ -8,7 +8,7 @@
 
 下图表现出不论是"先删除缓存再更新数据库"还是"先更新数据库再删除缓存", 当多个线程运行的时候可能会遇到数据不一致的情况.
 
-![Inconsistency——Order](./pic/10_inconsistency_order.png)
+![Inconsistency——Order](../pic/10_inconsistency_order.png)
 
 > A线程执行`UPDATE`而B线程执行`GET`, 然而缓存和数据库数据不一致
 
@@ -23,7 +23,7 @@
 
 下图表现不论是"先删除缓存再更新数据库"还是"先更新数据库再删除缓存", 当某个步骤失败故障的时候可能会遇到更新后仍拿到旧值的情况.
 
-![Inconsistency——Failure](./pic/10_inconsistency_failure.png)
+![Inconsistency——Failure](../pic/10_inconsistency_failure.png)
 
 > 先执行`UPDATE key "xyz"`, 然后执行`GET key`, 但是拿到的还是旧值
 

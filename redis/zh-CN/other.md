@@ -36,7 +36,7 @@ Linux的IO多路复用指的是一个线程处理多个IO流, 它是通过`selec
 
 而在Redis中, 内核会同时存在多个*监听套接字*和*已连接套接字*, 内核一直监听这些套接字上的连接和数据传输请求. 当有请求时才通知Redis来处理, 否则Redis线程可以服务其他操作.
 
-![io multiplexing](./pic/other_io_multiplexing.png)
+![io multiplexing](../pic/other_io_multiplexing.png)
 
 1. `select/epoll`监测到套接字上是否有请求到达
 2. 触发相应的事件, 比如accpetEvent, readEvent和writeEvent
@@ -58,7 +58,7 @@ Linux的IO多路复用指的是一个线程处理多个IO流, 它是通过`selec
 
 #### ❓ AOF重写为什么要两个缓冲区?
 
-![Why Two AOF Buf](./pic/other_two_aof_buf.png)
+![Why Two AOF Buf](../pic/other_two_aof_buf.png)
 > 注意: 重写的时候并不是把aof中的指令进行重写, 而是直接对内存的数据模拟成指令.
 > 
 > 假设aof的指令是`SET key value1` &rarr; `SET key value2`, 重写直接读内存发现`key=value2`, 所以直接模拟一条`SET key value2`到重写后的aof文件.
