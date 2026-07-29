@@ -1,0 +1,198 @@
+# What is reflection
+
+Reflection refers to the ability of a program to inspect, understand, and even manipulate its own structural information during compilation or runtime.
+
+This "structural information" typically includes:
+- type name
+- member variables
+- Member functions
+- Inheritance relationship
+- enumeration value
+- Template parameters
+- Attributes / metadata (metadata)
+
+> You have an object, but you don't know at runtime what class it is, or what members it has. Reflection allows the program to "look in the mirror" and look at itself and say: "Oh, I am a class called User. I have two members, name and age, and I can also call the save() method."
+
+
+For example, Python can easily implement runtime reflection.
+```py
+class Person:
+	...
+
+p = Person(...)
+
+# 内省（Introspection）： 获取类型信息（类名、成员变量、成员函数）
+print(vars(p))
+
+# 动态调用（Dynamic Invocation）： 根据名称字符串调用方法
+method = getattr(p, "func")
+method()
+
+# 动态实例化（Dynamic Creation）： 根据类名字符串创建对象
+cls = globals()["Person"]
+pp = cls(...)
+```
+
+As a static language, C++ has many type names turned into static memory addresses after compilation, so it is difficult to directly obtain similar reflections in dynamic languages.
+
+---
+
+# Reflection’s core application scenarios
+
+## General log/debug/print
+
+It is very simple for Python, etc., because Python classes have metadata, and you know the members and methods contained in this class, so you can print them all directly.
+```py
+class Person:
+	def __init__(self, ...):
+		self.name = ...
+		self.age = ...
+
+p = Person(...)
+print(p) # 完全自动识别成员 Person(name=..., age=...)
+```
+
+There is no way for a C++ class to know all its members or methods, and it can only manually control the output members.
+
+```cpp
+class Person {
+	string name;
+	int age;
+};
+
+Person p(...);
+cout << "name=" << p.name << ", age=" << p.age; // 没法自动识别有什么成员
+```
+
+## Serialization / Deserialization
+
+For example, convert objects into: JSON, YAML, XML, etc. If there is reflection, members can be traversed automatically:
+```cpp
+// 理想情况下可以自动生成：{"name": "Alice", "age": 20}
+struct User {
+    std::string name;
+    int age;
+};
+```
+
+## ORM / Configure system
+
+For example, map objects to: database tables, configuration files, command line parameters, etc.
+```cpp
+// reflection 可以帮助自动：读取配置，字段校验，自动绑定CLI参数等
+struct Config {
+    std::string host;
+    int port;
+    bool enable_ssl;
+};
+```
+
+---
+
+# RTTI
+
+For details, refer to [RTTI](./rtti.md).
+
+RTTI is not a complete reflection
+* typeid
+	- Can only get very limited type info and usually mangled name
+	- Cannot traverse member variables and functions
+	- Field names cannot be listed dynamically
+* dynamic_cast
+	- You can only know whether it is a derived class
+	- Cannot traverse member variables and functions
+---
+
+# Compile-time Introspection
+
+## type traits
+
+```cpp
+#include <type_traits>
+
+template <typename T>
+void foo(const T& value) {
+    if constexpr (std::is_integral_v<T>) {
+        // 整数逻辑
+    } else if constexpr (std::is_floating_point_v<T>) {
+        // 浮点逻辑
+    } else {
+        // 其他类型
+    }
+}
+```
+
+While you can't "list all members of T", you can:
+- Determine type category
+- Determine whether it can be copied
+- Determine whether trivially copyable
+- Determine whether it is polymorphic
+- Determine inheritance relationship
+- Determine whether it is enum/class/reference/pointer
+
+For details, refer to [type traits](./type-traits.md).
+
+## detectionidiom
+
+```cpp
+#include <type_traits>
+#include <utility>
+
+template <typename, typename = void>
+struct has_begin : std::false_type {};
+
+template <typename T>
+struct has_begin<T, std::void_t<decltype(std::declval<T>().begin())>>
+    : std::true_type {};
+
+template <typename T>
+inline constexpr bool has_begin_v = has_begin<T>::value;
+```
+
+For example, the above code detects whether there is a certain method.
+
+For details, refer to [concept](./concepts-and-requires.md), [SFINAE](./sfinae.md), etc.
+
+## marco
+
+In engineering, one of the most common reflection solutions is actually: macro + registration.
+
+```cpp
+#include <iostream>
+#include <string>
+
+// 把 PERSON_FIELDS(X) 的文本替换成 X(name) 和 X(age)
+#define PERSON_FIELDS(X) \
+    X(name)              \
+    X(age)
+
+struct Person {
+    std::string name;
+    int age;
+
+	// PERSON_FIELDS(X)
+	//
+	// X(name)
+	// X(age)
+	//
+	// std::cout << "name" << ": " << name << "\n";
+	// std::cout << "age" << ": " << age << "\n";
+    void print() const {
+		// X(arg) 的文本等价于 std::cout 的一个文本
+#define X(field) std::cout << #field << ": " << field << "\n";
+        PERSON_FIELDS(X)
+#undef X
+    }
+};
+
+// name: Alice
+// age: 30
+Person p{"Alice", 30};
+p.print();
+```
+
+Its essence is to centrally maintain the field list once and then use it in multiple places. This is not true reflection, but it can achieve the functions of "avoiding repeated writing of field lists" and "automatically generating boilerplate code".
+
+## Code generation (code generation)
+
+Reflection in many large C++ projects is essentially code generated by external tools. For example, user-defined schema, Domain Specific Language, etc., some tools will automatically convert and generate corresponding code.

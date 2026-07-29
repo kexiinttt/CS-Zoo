@@ -38,7 +38,7 @@ b = "hello"
 c = 3.14
 d = c
 ```
-![Python Memory](../static/python_memory.png)
+![Python Memory](../../static/python_memory.png)
 
 ---
 

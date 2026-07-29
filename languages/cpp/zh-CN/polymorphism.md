@@ -114,7 +114,7 @@ public:
 Base base("base");
 Derive derive("derive", "This is field");
 ```
-![virtual](../static/virtual.png)
+![virtual](../../static/virtual.png)
 
 如果使用下面的方法调用，那么相当于如下流程
 ```cpp
